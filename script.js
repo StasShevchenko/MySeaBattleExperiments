@@ -149,32 +149,11 @@ function getCorrectX(x) {
       return x;
     }
     case Orientations.VERTICAL: {
-      switch (currentShipSize) {
-        case ShipSizes.BIGGEST: {
-          if (x > 6) {
-            return x - (x - 6);
-          } else {
-            return x;
-          }
-        }
-        case ShipSizes.BIG: {
-          if (x > 7) {
-            return x - (x - 7);
-          } else {
-            return x;
-          }
-        }
-        case ShipSizes.MEDIUM: {
-          if (x > 8) {
-            return x - (x - 8);
-          } else {
-            return x;
-          }
-        }
-        case ShipSizes.SMALL: {
-          return x;
-        }
-      }
+      if (currentShipSize == ShipSizes.SMALL) {
+        return x;
+      } else if (x > 10 - currentShipSize) {
+        return 10 - currentShipSize;
+      } else return x;
     }
   }
 }
@@ -185,32 +164,11 @@ function getCorrectY(y) {
       return y;
     }
     case Orientations.HORIZONTAL: {
-      switch (currentShipSize) {
-        case ShipSizes.BIGGEST: {
-          if (y > 6) {
-            return y - (y - 6);
-          } else {
-            return y;
-          }
-        }
-        case ShipSizes.BIG: {
-          if (y > 7) {
-            return y - (y - 7);
-          } else {
-            return y;
-          }
-        }
-        case ShipSizes.MEDIUM: {
-          if (y > 8) {
-            return y - (y - 8);
-          } else {
-            return y;
-          }
-        }
-        case ShipSizes.SMALL: {
-          return y;
-        }
-      }
+      if (currentShipSize == ShipSizes.SMALL) {
+        return y;
+      } else if (y > 10 - currentShipSize) {
+        return 10 - currentShipSize;
+      } else return y;
     }
   }
 }
