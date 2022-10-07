@@ -18,11 +18,21 @@ const GameFieldStates = Object.freeze({
   RESTRICTED: 2,
   DESTRUCTED: 3,
 });
+const ShipReserve = Object({
+  biggestCount: 1,
+  bigCount: 2,
+  mediumCount: 3,
+  smallCount: 4,
+});
 const userGameField = document.getElementById("user-game-field");
 makeUserGameField(10, 10);
 //Radio buttons для выбора размерности корабля
 let shipSizeRadios = document.getElementsByName("ship");
 let orientationRadios = document.getElementsByName("orientation");
+let shipLabels = document.querySelectorAll(".ship-buttons-group p");
+
+//Присваимваем меткам radio button'ов актуальные значения
+updateLabels();
 //Текущий размер корабля для размещения
 let currentShipSize = 4;
 //Текущая ориентация 1 - горизонтальная, 2 - вертикальная
@@ -97,30 +107,32 @@ function makeUserGameField(rows, cols) {
 //x-строка, y - столбец
 function drawCells(x, y) {
   //Горизонтальная ориентация
-  switch (currentOrientation) {
-    case Orientations.HORIZONTAL: {
-      if (!checkPlacement(x, y)) {
-        for (i = 0; i < currentShipSize; i++) {
-          getGameFieldCell(x, y + i).style.background = "red";
+  if (mapShipSizeToQuantity(currentShipSize) > 0) {
+    switch (currentOrientation) {
+      case Orientations.HORIZONTAL: {
+        if (!checkPlacement(x, y)) {
+          for (i = 0; i < currentShipSize; i++) {
+            getGameFieldCell(x, y + i).style.background = "red";
+          }
+        } else {
+          for (i = 0; i < currentShipSize; i++) {
+            getGameFieldCell(x, y + i).style.background = "green";
+          }
         }
-      } else {
-        for (i = 0; i < currentShipSize; i++) {
-          getGameFieldCell(x, y + i).style.background = "green";
-        }
+        break;
       }
-      break;
-    }
-    case Orientations.VERTICAL: {
-      if (!checkPlacement(x, y)) {
-        for (i = 0; i < currentShipSize; i++) {
-          getGameFieldCell(x + i, y).style.background = "red";
+      case Orientations.VERTICAL: {
+        if (!checkPlacement(x, y)) {
+          for (i = 0; i < currentShipSize; i++) {
+            getGameFieldCell(x + i, y).style.background = "red";
+          }
+        } else {
+          for (i = 0; i < currentShipSize; i++) {
+            getGameFieldCell(x + i, y).style.background = "green";
+          }
         }
-      } else {
-        for (i = 0; i < currentShipSize; i++) {
-          getGameFieldCell(x + i, y).style.background = "green";
-        }
+        break;
       }
-      break;
     }
   }
 }
@@ -180,25 +192,26 @@ function getGameFieldCell(row, column) {
 
 //Функция отвечающая за размещение корабля
 function putShip(x, y) {
-  switch (currentOrientation) {
-    case Orientations.HORIZONTAL: {
-      if (checkPlacement(x, y)) {
+  if (mapShipSizeToQuantity(currentShipSize) > 0 && checkPlacement(x, y)) {
+    switch (currentOrientation) {
+      case Orientations.HORIZONTAL: {
         for (let i = 0; i < currentShipSize; i++) {
           userFieldMatrix[x][y + i] = GameFieldStates.PLACED;
           getGameFieldCell(x, y + i).style.background = "blue";
         }
+        break;
       }
-      break;
-    }
-    case Orientations.VERTICAL: {
-      if (checkPlacement(x, y)) {
+      case Orientations.VERTICAL: {
         for (let i = 0; i < currentShipSize; i++) {
           userFieldMatrix[x + i][y] = GameFieldStates.PLACED;
           getGameFieldCell(x + i, y).style.background = "blue";
         }
+        break;
       }
-      break;
     }
+    console.log(ShipReserve.smallCount);
+    decreaseShipCount();
+    updateLabels();
   }
 }
 
@@ -228,8 +241,6 @@ function checkPlacement(x, y) {
 
 //Функция, которая проверяет наличие корабля в соседней клетке
 function validatePosition(x, y) {
-  console.log(`${x} ${y}`);
-  console.log("1");
   if (x > 0 && y > 0) {
     if (userFieldMatrix[x - 1][y - 1] == GameFieldStates.PLACED) return false;
   }
@@ -256,4 +267,51 @@ function validatePosition(x, y) {
     if (userFieldMatrix[x + 1][y + 1] == GameFieldStates.PLACED) return false;
   }
   return true;
+}
+
+//Размер корабля, к количеству
+function mapShipSizeToQuantity(shipSize) {
+  switch (shipSize) {
+    case ShipSizes.BIGGEST: {
+      return ShipReserve.biggestCount;
+    }
+    case ShipSizes.BIG: {
+      return ShipReserve.bigCount;
+    }
+    case ShipSizes.MEDIUM: {
+      return ShipReserve.mediumCount;
+    }
+    case ShipSizes.SMALL: {
+      return ShipReserve.smallCount;
+    }
+  }
+}
+
+//Уменьшить количество кораблей
+function decreaseShipCount() {
+  switch (currentShipSize) {
+    case ShipSizes.BIGGEST: {
+      ShipReserve.biggestCount--;
+      break;
+    }
+    case ShipSizes.BIG: {
+      ShipReserve.bigCount--;
+      break;
+    }
+    case ShipSizes.MEDIUM: {
+      ShipReserve.mediumCount--;
+      break;
+    }
+    case ShipSizes.SMALL: {
+      ShipReserve.smallCount--;
+      break;
+    }
+  }
+}
+
+function updateLabels() {
+  shipLabels[0].innerHTML = `Четырёхпалубный корабль (осталось: ${ShipReserve.biggestCount})`;
+  shipLabels[1].innerHTML = `Трёхпалубный корабль (осталось: ${ShipReserve.bigCount})`;
+  shipLabels[2].innerHTML = `Двухпалубный корабль (осталось: ${ShipReserve.mediumCount})`;
+  shipLabels[3].innerHTML = `Однопалубный корабль (осталось: ${ShipReserve.smallCount})`;
 }
