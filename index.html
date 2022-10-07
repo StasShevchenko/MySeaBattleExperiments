@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="_width=device-width_" /> -->
+    <title>Морской бой</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Морской бой!</h1>
+    <h2>Ваш противник расставляет корабли!</h2>
+    <div class="game-field">
+      <div class="user-field" id="user-game-field"></div>
+      <div class="spacer"></div>
+      <div class="enemy-field" hidden></div>
+      <div class="configure-user-field">
+        <div>
+          <h2>Расстановка кораблей:</h2>
+          <h4>Тип корабля:</h4>
+          <div class="ship-buttons-group">
+            <p>
+              <input
+                type="radio"
+                id="biggest-ship-rb"
+                name="ship"
+                value="4"
+                checked
+              />Четырёхпалубный корабль
+            </p>
+            <p>
+              <input
+                type="radio"
+                id="big-ship-rb"
+                name="ship"
+                value="3"
+              />Трёхпалубный корабль
+            </p>
+            <p>
+              <input
+                type="radio"
+                id="medium-ship-rb"
+                name="ship"
+                value="2"
+              />Двухпалубный корабль
+            </p>
+            <p>
+              <input
+                type="radio"
+                id="small-ship-rb"
+                name="ship"
+                value="1"
+              />Однопалубный корабль
+            </p>
+          </div>
+          <h4>Положение корабля:</h4>
+          <div class="orientation-buttons-group">
+            <p>
+              <input
+                type="radio"
+                id="horizontal-rb"
+                name="orientation"
+                value="1"
+                checked
+              />Горизонтальное
+            </p>
+            <p>
+              <input
+                type="radio"
+                id="vertical-rb"
+                name="orientation"
+                value="2"
+              />Вертикальное
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prepare-legend">
+      <div class="green">Клетки, на которых может быть размещен корабль.</div>
+      <div class="red">Клетки, на которых корабль не может быть размещен.</div>
+      <div class="blue">Клетки, на которых размещены ваши корабли.</div>
+    </div>
+    <div class="game-legend" hidden>
+      <div class="blue">Клетки, на которых размещены ваши корабли.</div>
+      <div class="black">Подорванные корабли</div>
+      <div class="pink">Клетки недоступные для выстрела</div>
+    </div>
+  </body>
+  <script src="script.js"></script>
+</html>
