@@ -24,6 +24,15 @@ const ShipReserve = Object({
   mediumCount: 3,
   smallCount: 4,
 });
+
+const clearButton = document.getElementById("clearButton");
+const readyButton = document.getElementById("readyButton");
+readyButton.disabled = true;
+
+clearButton.addEventListener("click", function(){
+  removeShips();
+})
+
 const userGameField = document.getElementById("user-game-field");
 makeUserGameField(10, 10);
 //Radio buttons для выбора размерности корабля
@@ -32,7 +41,7 @@ let orientationRadios = document.getElementsByName("orientation");
 let shipLabels = document.querySelectorAll(".ship-buttons-group p");
 
 //Присваимваем меткам radio button'ов актуальные значения
-updateLabels();
+updateLabels()
 //Текущий размер корабля для размещения
 let currentShipSize = 4;
 //Текущая ориентация 1 - горизонтальная, 2 - вертикальная
@@ -314,4 +323,18 @@ function updateLabels() {
   shipLabels[1].innerHTML = `Трёхпалубный корабль (осталось: ${ShipReserve.bigCount})`;
   shipLabels[2].innerHTML = `Двухпалубный корабль (осталось: ${ShipReserve.mediumCount})`;
   shipLabels[3].innerHTML = `Однопалубный корабль (осталось: ${ShipReserve.smallCount})`;
+}
+
+function removeShips(){
+  for(i = 0; i < 10; i++){
+    for(j = 0; j < 10; j++){
+      getGameFieldCell(i, j).style.background = "transparent";
+      userFieldMatrix[i][j] = GameFieldStates.EMPTY;
+    }
+  }
+  ShipReserve.biggestCount = 1;
+  ShipReserve.bigCount = 2;
+  ShipReserve.mediumCount = 3;
+  ShipReserve.smallCount = 4;
+  updateLabels();
 }

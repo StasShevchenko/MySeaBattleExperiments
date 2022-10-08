@@ -11,11 +11,12 @@
     <h2>Ваш противник расставляет корабли!</h2>
     <div class="game-field">
       <div class="user-field" id="user-game-field"></div>
-      <div class="spacer"></div>
+
       <div class="enemy-field" hidden></div>
+
       <div class="configure-user-field">
         <div>
-          <h2>Расстановка кораблей:</h2>
+          <h3>Расстановка кораблей:</h3>
           <h4>Тип корабля:</h4>
           <div class="ship-buttons-group">
             <div style="display: flex;">
@@ -55,7 +56,7 @@
               />
               <p style="margin: 4px 0px;">Однопалубный корабль</p>
             </div>
-            
+      
           </div>
           <h4>Положение корабля:</h4>
           <div class="orientation-buttons-group">
@@ -78,6 +79,13 @@
             </p>
           </div>
         </div>
+      </div>
+
+      <div class="control-panel">
+        <form name="mainControl">
+          <input type="button" name = "ready" value = "Объявить готовность к бою!" id="readyButton"/>
+          <input type="button" name = "clear" value = "Обнулить расстановку кораблей" id = "clearButton" />
+        </form>
       </div>
     </div>
 
