@@ -1,3 +1,48 @@
+let stompClient = null;
+let currentPlayerName;
+const url = "http://localhost:8080";
+
+const startForm = document.getElementById("startForm");
+const playersListForm = document.getElementById("playersListForm");
+const mainGameForm = document.getElementById("mainGameForm");
+const playersList = document.getElementById("playersList");
+playersListForm.style.display = "none";
+mainGameForm.style.display = "none";
+
+//
+//Блок входа в игру
+//
+const enterNameButton = document.getElementById("enterNameButton");
+const enterNameTextField = document.getElementById("enterNameTextField");
+
+enterNameButton.addEventListener("click", function () {
+  if (enterNameTextField.value != "") {
+    currentPlayerName = enterNameTextField.value.trim();
+    const socket = new SockJS(url + "/seabattle");
+    stompClient = Stomp.over(socket);
+    stompClient.connect(
+      {},
+      function () {
+        stompClient.subscribe("/topic/players", function (payload) {
+          onPlayerAdded(payload);
+        });
+        stompClient.send(
+          "/app/addplayer",
+          {},
+          JSON.stringify({ login: enterNameTextField.value.trim() })
+        );
+        startForm.style.display = "none";
+        playersListForm.style.display = "block";
+      },
+      function () {}
+    );
+  }
+});
+
+//
+//Конец блока входа в игру
+//
+
 //
 //Блок игровой инициализации
 //
@@ -29,9 +74,9 @@ const clearButton = document.getElementById("clearButton");
 const readyButton = document.getElementById("readyButton");
 readyButton.disabled = true;
 
-clearButton.addEventListener("click", function(){
+clearButton.addEventListener("click", function () {
   removeShips();
-})
+});
 
 const userGameField = document.getElementById("user-game-field");
 makeUserGameField(10, 10);
@@ -41,7 +86,7 @@ let orientationRadios = document.getElementsByName("orientation");
 let shipLabels = document.querySelectorAll(".ship-buttons-group p");
 
 //Присваимваем меткам radio button'ов актуальные значения
-updateLabels()
+updateLabels();
 //Текущий размер корабля для размещения
 let currentShipSize = 4;
 //Текущая ориентация 1 - горизонтальная, 2 - вертикальная
@@ -59,7 +104,7 @@ for (let i = 0; i < 10; i++) {
 }
 
 //Навешиваем слушателей для радиокнопок размерности корабля
-for (radio of shipSizeRadios) {
+for (let radio of shipSizeRadios) {
   //Переменные цикла надо локализовать, иначе в слушаетеле будет использоваться последнее значение переменной
   let currentRadio = radio;
   radio.addEventListener("change", function () {
@@ -325,9 +370,9 @@ function updateLabels() {
   shipLabels[3].innerHTML = `Однопалубный корабль (осталось: ${ShipReserve.smallCount})`;
 }
 
-function removeShips(){
-  for(i = 0; i < 10; i++){
-    for(j = 0; j < 10; j++){
+function removeShips() {
+  for (i = 0; i < 10; i++) {
+    for (j = 0; j < 10; j++) {
       getGameFieldCell(i, j).style.background = "transparent";
       userFieldMatrix[i][j] = GameFieldStates.EMPTY;
     }
@@ -337,4 +382,13 @@ function removeShips(){
   ShipReserve.mediumCount = 3;
   ShipReserve.smallCount = 4;
   updateLabels();
+}
+
+function onPlayerAdded(payload) {
+  const player = JSON.parse(payload.body);
+  if(player.login != currentPlayerName){
+  const playerItem = document.createElement("li");
+  playerItem.appendChild(document.createTextNode(player.login));
+  playersList.appendChild(playerItem);
+  }
 }
