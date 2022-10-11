@@ -1,14 +1,14 @@
 import * as prepareGameFunctions from './prepare_game_functions.js';
 let stompClient = null;
 let currentPlayerName;
+let currentPlayerId;
 const url = "http://localhost:8080";
 
 const startForm = document.getElementById("startForm");
 const playersListForm = document.getElementById("playersListForm");
 const mainGameForm = document.getElementById("mainGameForm");
 const playersList = document.getElementById("playersList");
-playersListForm.style.display = "none";
-//mainGameForm.style.display = "none";
+
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -27,19 +27,7 @@ enterNameButton.addEventListener("click", function () {
     stompClient = Stomp.over(socket);
     stompClient.connect(
       {},
-      function () {
-        stompClient.subscribe("/topic/players", function (payload) {
-          onPlayersReceive(payload);
-        });
-        stompClient.send(
-          "/app/addplayer",
-          {},
-          JSON.stringify({ login: enterNameTextField.value.trim() })
-        );
-        startForm.style.display = "none";
-        playersListForm.style.display = "block";
-      },
-      function () {}
+      onConnectSuccess
     );
   }
 });
@@ -99,22 +87,53 @@ for (let radio of orientationRadios) {
 
 function onPlayersReceive(payload) {
   const players = JSON.parse(payload.body);
-  playersList.child
   while(playersList.firstChild){
     playersList.removeChild(playersList.lastChild);
   }
   for(let player of players){
-    if(player.login != currentPlayerName){
+    if(player.login.trim() != currentPlayerName){
       const playerItem = document.createElement("li");
       playerItem.appendChild(document.createTextNode(player.login));
       const playerInviteButton = document.createElement("button");
       playerInviteButton.textContent = "Бросить вызов!";
       playerInviteButton.style.marginLeft = "10px";
       playerInviteButton.addEventListener("click", function(){
-        console.log("Invite button clicked: " + player.login)
+        sendInviteToPlayer(player);
       })
       playerItem.appendChild(playerInviteButton);
       playersList.appendChild(playerItem); 
+    } else {
+      currentPlayerId = player.id;
+      subscribeToPrivateMessages();
     }
   }
+}
+
+function subscribeToPrivateMessages(){
+  stompClient.subscribe("/private/messages" + currentPlayerId.trim(), function(payload){
+    console.log("receved value!!!");
+    console.log("I've received invite: " + payload);
+  })
+}
+
+function sendInviteToPlayer(player){
+  let message = "Hello man";
+  stompClient.send(
+    "/app/private-message",
+    {},
+    JSON.stringify({message:message, receiverId: player.id})
+  )
+}
+
+function onConnectSuccess(){
+  stompClient.subscribe("/topic/players", function (payload) {
+    onPlayersReceive(payload);
+  });
+  stompClient.send(
+    "/app/addplayer",
+    {},
+    enterNameTextField.value.trim()
+  );
+  startForm.style.display = "none";
+  playersListForm.style.display = "block";
 }
