@@ -7,17 +7,9 @@ let currentShipSize = 4;
 //Текущая ориентация 1 - горизонтальная, 2 - вертикальная
 let currentOrientation = 1;
 
-//Матрица значений состояния клеток поля и её инициализация
-//0-пустая клетка, 1 - клетка с кораблем, 2 - клетка недоступная для выстрела, 3 - клетка с подбитым кораблем
-let userFieldMatrix = new Array(10);
-for (let i = 0; i < userFieldMatrix.length; i++) {
-  userFieldMatrix[i] = new Array(10);
-}
-for (let i = 0; i < 10; i++) {
-  for (let j = 0; j < 10; j++) {
-    userFieldMatrix[i][j] = 0;
-  }
-}
+let _readyButton;
+
+let userFieldMatrix;
 
 export function changeCurrentShipSize(value) {
   if (value == 4) {
@@ -32,6 +24,14 @@ export function changeCurrentShipSize(value) {
   if (value == 1) {
     currentShipSize = ShipSizes.SMALL;
   }
+}
+
+export function setReadyButton(readyButton){
+  _readyButton = readyButton;
+}
+
+export function setUserFieldMatrix(userField){
+  userFieldMatrix = userField;
 }
 
 export function setUserGameField(field){
@@ -317,4 +317,8 @@ export function updateLabels() {
   shipLabels[1].innerHTML = `Трёхпалубный корабль (осталось: ${ShipReserve.bigCount})`;
   shipLabels[2].innerHTML = `Двухпалубный корабль (осталось: ${ShipReserve.mediumCount})`;
   shipLabels[3].innerHTML = `Однопалубный корабль (осталось: ${ShipReserve.smallCount})`;
+
+  if(ShipReserve.biggestCount + ShipReserve.bigCount + ShipReserve.mediumCount + ShipReserve.smallCount == 0){
+    _readyButton.disabled = false;
+  }
 }
