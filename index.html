@@ -57,6 +57,15 @@
         </button>
       </div>
     </div>
+
+    <div class="pop-up-container" id = "gameResultContainer">
+      <div class="pop-up">
+        <h2 id = "resultMessageHeader"></h2>
+        <button id="returnToGameListButton">
+          Вернуться к списку игроков
+        </button>
+      </div>
+    </div>
     
 
     <div class="main-game-form" id="mainGameForm">
@@ -65,9 +74,9 @@
       <div class="game-field">
         <div class="user-field" id="user-game-field"></div>
 
-        <div class="enemy-field" hidden></div>
+        <div class="enemy-field" id ="enemyGameField"></div>
 
-        <div class="configure-user-field">
+        <div class="configure-user-field" id = "userFieldControlPanel">
           <div>
             <h3>Расстановка кораблей:</h3>
             <h4>Тип корабля:</h4>
@@ -118,7 +127,7 @@
           </div>
         </div>
 
-        <div class="control-panel">
+        <div class="control-panel" id = "prepareGameButtonsPanel">
           <form name="mainControl">
             <input
               type="button"
@@ -136,14 +145,14 @@
         </div>
       </div>
 
-      <div class="prepare-legend">
+      <div class="prepare-legend" id="prepareLegend">
         <div class="green">Клетки, на которых может быть размещен корабль.</div>
         <div class="red">
           Клетки, на которых корабль не может быть размещен.
         </div>
         <div class="blue">Клетки, на которых размещены ваши корабли.</div>
       </div>
-      <div class="game-legend" hidden>
+      <div class="game-legend" id="gameLegend">
         <div class="blue">Клетки, на которых размещены ваши корабли.</div>
         <div class="black">Подорванные корабли</div>
         <div class="pink">Клетки недоступные для выстрела</div>

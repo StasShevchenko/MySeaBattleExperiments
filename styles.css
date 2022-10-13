@@ -95,6 +95,12 @@ h2 {
   grid-template-columns: repeat(var(--grid-cols), 1fr);
 }
 
+#enemyGameField{
+  display: none;
+  grid-template-rows: repeat(var(--grid-rows), 1fr);
+  grid-template-columns: repeat(var(--grid-cols), 1fr);
+}
+
 .grid-item {
   border: 1px solid #ddd;
   text-align: center;
@@ -124,6 +130,10 @@ h2 {
 .game-legend {
   margin: 10px;
   display: flex;
+}
+
+.game-legend{
+  display: none;
 }
 
 .user-field,
@@ -228,6 +238,7 @@ button {
   padding: 10px;
   margin: 10px;
 }
+
 
 /*
 body {

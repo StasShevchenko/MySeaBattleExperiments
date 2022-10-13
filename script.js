@@ -13,8 +13,12 @@ let enemyId;
 let isShipsPlaced = false;
 //Определяет получено ли вражеское поле
 let isEnemyFieldReceived = false;
+//Определяет ваш ли сейчас ход
+let isMyMove = false;
+//
+let enemyLifeCount = 20;
 
-const url = "http://localhost:8080";
+const url = "https://3b55-85-26-186-195.ngrok.io";
 
 const startForm = document.getElementById("startForm");
 const playersListForm = document.getElementById("playersListForm");
@@ -94,8 +98,19 @@ const enemyReadyHeader = document.getElementById("enemyReadyHeader");
 
 const clearButton = document.getElementById("clearButton");
 const readyButton = document.getElementById("readyButton");
+const prepareLegend = document.getElementById("prepareLegend");
+const gameLegend = document.getElementById("gameLegend");
+const userFieldControlPanel = document.getElementById("userFieldControlPanel");
+const prepareGameButtonsPanel = document.getElementById(
+  "prepareGameButtonsPanel"
+);
+const endGamePopUp = document.getElementById("gameResultContainer");
+const endGameMessage = document.getElementById("resultMessageHeader");
+const endGameButton = document.getElementById("returnToGameListButton");
+
 readyButton.disabled = true;
 const userGameField = document.getElementById("user-game-field");
+const enemyGameField = document.getElementById("enemyGameField");
 prepareGameFunctions.setUserGameField(userGameField);
 prepareGameFunctions.setShipLabels(shipLabels);
 prepareGameFunctions.makeUserGameField(10, 10);
@@ -103,26 +118,27 @@ prepareGameFunctions.setUserFieldMatrix(userFieldMatrix);
 //Присваимваем меткам radio button'ов актуальные значения
 prepareGameFunctions.updateLabels(shipLabels);
 prepareGameFunctions.setReadyButton(readyButton);
+prepareGameFunctions.setIsFightStarted(isFightStarted);
 
 clearButton.addEventListener("click", function () {
   prepareGameFunctions.removeShips();
   readyButton.disabled = true;
 });
 
-readyButton.addEventListener("click", function(){
+readyButton.addEventListener("click", function () {
   clearButton.disabled = true;
   readyButton.disabled = true;
   isShipsPlaced = true;
   startFight();
-  stompClient.send("/app/send-field",
-  {},
-  JSON.stringify({
-    receiverId: enemyId,
-    gameField: userFieldMatrix
-  }))
-})
-
-
+  stompClient.send(
+    "/app/send-field",
+    {},
+    JSON.stringify({
+      receiverId: enemyId,
+      gameField: userFieldMatrix,
+    })
+  );
+});
 
 //Навешиваем слушателей для радиокнопок размерности корабля
 for (let radio of shipSizeRadios) {
@@ -229,7 +245,23 @@ function subscribeToPrivateMessages() {
       }
       //Если получатель не принял приглашение
       if (message.message == "REJECT") {
+        isMyMove = false;
         waitPopUp.style.display = "none";
+      }
+      if (message.message == "YOU_LOSE") {
+        console.log("lose received!");
+        endGameMessage.innerHTML = "Все ваши корабли уничтожены! Вы проиграли!";
+        endGameButton.addEventListener("click", function () {
+          gameLegend.style.display = "none";
+          prepareLegend.style.display = "block";
+          enemyGameField.style.display = "none";
+          userFieldControlPanel.style.display = "block";
+          prepareGameButtonsPanel.style.display = "block";
+          mainGameForm.style.display = "none";
+          playersListForm.style.display = "block";
+          endGamePopUp.style.display = "none";
+        });
+        endGamePopUp.style.display = "flex";
       }
     }
   );
@@ -241,9 +273,11 @@ function sendInviteToPlayer(player) {
   let message = "INVITE";
   let cancelMessage = "CANCEL_INVITATION";
   waitPopUp.style.display = "flex";
+  isMyMove = true;
   //Отправка отмены приглашения
   rejectSendedInvitationButton.addEventListener("click", function (player) {
     waitPopUp.style.display = "none";
+    isMyMove = false;
     stompClient.send(
       "/app/private-message",
       {},
@@ -269,39 +303,61 @@ function sendInviteToPlayer(player) {
 }
 
 //Функция, необходимая для того, чтобы подписаться на события игры
-function subscribeToGame(){
-  stompClient.subscribe("/private/game"+currentPlayerId, function(payload){
+function subscribeToGame() {
+  stompClient.subscribe("/private/game" + currentPlayerId, function (payload) {
     onGameReceive(payload);
-  })
+  });
 }
 
-function onGameReceive(payload){
-  if(!isGameStarted){
+function onGameReceive(payload) {
+  if (!isGameStarted) {
     waitPopUp.style.display = "none";
     let game = JSON.parse(payload.body);
-    if(game.firstPlayerId == currentPlayerId){
+    if (game.firstPlayerId == currentPlayerId) {
       enemyId = game.secondPlayerId;
-    } else{
+    } else {
       enemyId = game.firstPlayerId;
     }
     isGameStarted = true;
     playersListForm.style.display = "none";
     mainGameForm.style.display = "block";
-  } else
-  if(!isFightStarted){
+  } else if (!isFightStarted) {
     let enemyField = JSON.parse(payload.body).gameField;
     enemyFieldMatrix = enemyField;
     enemyReadyHeader.innerHTML = "Ваш противник расставил корабли!";
     isEnemyFieldReceived = true;
     startFight();
+  } else {
+    let move = JSON.parse(payload.body);
+    let x = parseInt(move.x);
+    let y = parseInt(move.y);
+    console.log(`Координаты: ${x} ${y}`);
+    console.log(getGameFieldCell(x, y));
+    if (userFieldMatrix[x][y] == prepareGameFunctions.GameFieldStates.PLACED) {
+      userFieldMatrix[x][y] = prepareGameFunctions.GameFieldStates.DESTRUCTED;
+      getGameFieldCell(x, y).style.background = "black";
+    } else {
+      userFieldMatrix[x][y] = prepareGameFunctions.GameFieldStates.RESTRICTED;
+      getGameFieldCell(x, y).style.background = "pink";
+      isMyMove = true;
+      enemyReadyHeader.innerHTML = "Ваш ход!";
+    }
   }
 }
 
-
 //Функция необходимая для начала боя
-function startFight(){
-  if(isEnemyFieldReceived && isShipsPlaced){
-    console.log("I am ready for fight")
+function startFight() {
+  if (isEnemyFieldReceived && isShipsPlaced) {
+    prepareLegend.style.display = "none";
+    gameLegend.style.display = "flex";
+    userFieldControlPanel.style.display = "none";
+    prepareGameButtonsPanel.style.display = "none";
+    if (isMyMove) enemyReadyHeader.innerHTML = "Ваш ход!";
+    else enemyReadyHeader.innerHTML = "Ход противника!";
+    enemyGameField.style.display = "grid";
+    makeEnemyGameField();
+    isFightStarted = true;
+    prepareGameFunctions.setIsFightStarted(isFightStarted);
   }
 }
 
@@ -312,4 +368,94 @@ function onConnectSuccess() {
   stompClient.send("/app/addplayer", {}, enterNameTextField.value.trim());
   startForm.style.display = "none";
   playersListForm.style.display = "block";
+}
+
+function makeEnemyGameField() {
+  enemyGameField.style.setProperty("--grid-rows", 10);
+  enemyGameField.style.setProperty("--grid-cols", 10);
+  for (let i = 0; i < 10; i++) {
+    for (let j = 0; j < 10; j++) {
+      let cell = document.createElement("div");
+      let x = i;
+      let y = j;
+      cell.addEventListener("click", function () {
+        onEnemyCellClick(x, y);
+      });
+      enemyGameField.appendChild(cell).className = "grid-item";
+    }
+  }
+}
+
+function getEnemyGameFieldCell(row, column) {
+  return enemyGameField.children[row * 10 + column];
+}
+
+function onEnemyCellClick(x, y) {
+  if (
+    isMyMove &&
+    enemyFieldMatrix[x][y] != prepareGameFunctions.GameFieldStates.RESTRICTED &&
+    enemyFieldMatrix[x][y] != prepareGameFunctions.GameFieldStates.DESTRUCTED
+  ) {
+    if (enemyFieldMatrix[x][y] == prepareGameFunctions.GameFieldStates.PLACED) {
+      enemyFieldMatrix[x][y] = prepareGameFunctions.GameFieldStates.DESTRUCTED;
+      getEnemyGameFieldCell(x, y).style.background = "black";
+      enemyLifeCount--;
+      stompClient.send(
+        "/app/send-move",
+        {},
+        JSON.stringify({
+          x: x,
+          y: y,
+          receiverId: enemyId,
+        })
+      );
+      checkWin();
+    } else {
+      enemyFieldMatrix[x][y] = prepareGameFunctions.GameFieldStates.RESTRICTED;
+      getEnemyGameFieldCell(x, y).style.background = "pink";
+      stompClient.send(
+        "/app/send-move",
+        {},
+        JSON.stringify({
+          x: x,
+          y: y,
+          receiverId: enemyId,
+        })
+      );
+      isMyMove = false;
+      enemyReadyHeader.innerHTML = "Ход противника!";
+    }
+  }
+}
+
+function getGameFieldCell(row, column) {
+  return userGameField.children[row * 10 + column];
+}
+
+function checkWin() {
+  if (enemyLifeCount == 0) {
+    stompClient.send(
+      "/app/private-message",
+      {},
+      JSON.stringify({
+        message: "YOU_LOSE",
+        receiverId: enemyId,
+        senderId: currentPlayerId,
+        senderName: currentPlayerName,
+      })
+    );
+    endGameMessage.innerHTML = "Вы победили!";
+    endGameButton.addEventListener("click", function () {
+      gameLegend.style.display = "none";
+      prepareLegend.style.display = "block";
+      enemyGameField.style.display = "none";
+      userFieldControlPanel.style.display = "block";
+      prepareGameButtonsPanel.style.display = "block";
+      mainGameForm.style.display = "none";
+      playersListForm.style.display = "block";
+      endGamePopUp.style.display = "flex";
+      endGamePopUp.style.display = "none";
+    });
+    endGamePopUp.style.display = "flex";
+  }
 }

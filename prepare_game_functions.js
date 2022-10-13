@@ -7,6 +7,8 @@ let currentShipSize = 4;
 //Текущая ориентация 1 - горизонтальная, 2 - вертикальная
 let currentOrientation = 1;
 
+let isFightStarted;
+
 let _readyButton;
 
 let userFieldMatrix;
@@ -26,19 +28,23 @@ export function changeCurrentShipSize(value) {
   }
 }
 
-export function setReadyButton(readyButton){
+export function setIsFightStarted(fightStarted) {
+  isFightStarted = fightStarted;
+}
+
+export function setReadyButton(readyButton) {
   _readyButton = readyButton;
 }
 
-export function setUserFieldMatrix(userField){
+export function setUserFieldMatrix(userField) {
   userFieldMatrix = userField;
 }
 
-export function setUserGameField(field){
-    userGameField = field;
+export function setUserGameField(field) {
+  userGameField = field;
 }
-export function setShipLabels(labels){
-    shipLabels = labels;
+export function setShipLabels(labels) {
+  shipLabels = labels;
 }
 export function changeCurrentOrientation(value) {
   if (value == 1) currentOrientation = Orientations.HORIZONTAL;
@@ -55,9 +61,11 @@ const ShipSizes = Object.freeze({
   MEDIUM: 2,
   SMALL: 1,
 });
-const GameFieldStates = Object.freeze({
+export const GameFieldStates = Object.freeze({
   EMPTY: 0,
   PLACED: 1,
+  RESTRICTED: 2,
+  DESTRUCTED: 3,
 });
 
 const ShipReserve = Object({
@@ -175,31 +183,34 @@ function checkPlacement(x, y) {
 //x-строка, y - столбец
 function drawCells(x, y) {
   //Горизонтальная ориентация
-  if (mapShipSizeToQuantity(currentShipSize) > 0) {
-    switch (currentOrientation) {
-      case Orientations.HORIZONTAL: {
-        if (!checkPlacement(x, y)) {
-          for (let i = 0; i < currentShipSize; i++) {
-            getGameFieldCell(x, y + i).style.background = "red";
+  if (!isFightStarted) {
+    console.log(isFightStarted);
+    if (mapShipSizeToQuantity(currentShipSize) > 0) {
+      switch (currentOrientation) {
+        case Orientations.HORIZONTAL: {
+          if (!checkPlacement(x, y)) {
+            for (let i = 0; i < currentShipSize; i++) {
+              getGameFieldCell(x, y + i).style.background = "red";
+            }
+          } else {
+            for (let i = 0; i < currentShipSize; i++) {
+              getGameFieldCell(x, y + i).style.background = "green";
+            }
           }
-        } else {
-          for (let i = 0; i < currentShipSize; i++) {
-            getGameFieldCell(x, y + i).style.background = "green";
-          }
+          break;
         }
-        break;
-      }
-      case Orientations.VERTICAL: {
-        if (!checkPlacement(x, y)) {
-          for (let i = 0; i < currentShipSize; i++) {
-            getGameFieldCell(x + i, y).style.background = "red";
+        case Orientations.VERTICAL: {
+          if (!checkPlacement(x, y)) {
+            for (let i = 0; i < currentShipSize; i++) {
+              getGameFieldCell(x + i, y).style.background = "red";
+            }
+          } else {
+            for (let i = 0; i < currentShipSize; i++) {
+              getGameFieldCell(x + i, y).style.background = "green";
+            }
           }
-        } else {
-          for (let i = 0; i < currentShipSize; i++) {
-            getGameFieldCell(x + i, y).style.background = "green";
-          }
+          break;
         }
-        break;
       }
     }
   }
@@ -207,18 +218,20 @@ function drawCells(x, y) {
 
 //Функция, необходимая для снятия отрисовки клеток размещения корабля
 function clearCells(x, y) {
-  if (currentOrientation == Orientations.HORIZONTAL) {
-    for (let i = 0; i < currentShipSize; i++) {
-      if (userFieldMatrix[x][y + i] == GameFieldStates.PLACED) {
-        getGameFieldCell(x, y + i).style.background = "blue";
-      } else getGameFieldCell(x, y + i).style.background = "transparent";
-    }
-    //Вертикальная ориентация
-  } else if (currentOrientation == Orientations.VERTICAL) {
-    for (let i = 0; i < currentShipSize; i++) {
-      if (userFieldMatrix[x + i][y] == GameFieldStates.PLACED) {
-        getGameFieldCell(x + i, y).style.background = "blue";
-      } else getGameFieldCell(x + i, y).style.background = "transparent";
+  if (!isFightStarted) {
+    if (currentOrientation == Orientations.HORIZONTAL) {
+      for (let i = 0; i < currentShipSize; i++) {
+        if (userFieldMatrix[x][y + i] == GameFieldStates.PLACED) {
+          getGameFieldCell(x, y + i).style.background = "blue";
+        } else getGameFieldCell(x, y + i).style.background = "transparent";
+      }
+      //Вертикальная ориентация
+    } else if (currentOrientation == Orientations.VERTICAL) {
+      for (let i = 0; i < currentShipSize; i++) {
+        if (userFieldMatrix[x + i][y] == GameFieldStates.PLACED) {
+          getGameFieldCell(x + i, y).style.background = "blue";
+        } else getGameFieldCell(x + i, y).style.background = "transparent";
+      }
     }
   }
 }
@@ -318,7 +331,13 @@ export function updateLabels() {
   shipLabels[2].innerHTML = `Двухпалубный корабль (осталось: ${ShipReserve.mediumCount})`;
   shipLabels[3].innerHTML = `Однопалубный корабль (осталось: ${ShipReserve.smallCount})`;
 
-  if(ShipReserve.biggestCount + ShipReserve.bigCount + ShipReserve.mediumCount + ShipReserve.smallCount == 0){
+  if (
+    ShipReserve.biggestCount +
+      ShipReserve.bigCount +
+      ShipReserve.mediumCount +
+      ShipReserve.smallCount ==
+    0
+  ) {
     _readyButton.disabled = false;
   }
 }
