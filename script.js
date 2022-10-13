@@ -18,7 +18,7 @@ let isMyMove = false;
 //
 let enemyLifeCount = 20;
 
-const url = "https://3b55-85-26-186-195.ngrok.io";
+const url = "http://localhost:8080";
 
 const startForm = document.getElementById("startForm");
 const playersListForm = document.getElementById("playersListForm");
