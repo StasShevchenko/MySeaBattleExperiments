@@ -13,6 +13,10 @@ let _readyButton;
 
 let userFieldMatrix;
 
+export function clearUserGameField(){
+  removeShips();
+}
+
 export function changeCurrentShipSize(value) {
   if (value == 4) {
     currentShipSize = ShipSizes.BIGGEST;
@@ -149,7 +153,6 @@ function putShip(x, y) {
         break;
       }
     }
-    console.log(ShipReserve.smallCount);
     decreaseShipCount();
     updateLabels();
   }
@@ -184,7 +187,6 @@ function checkPlacement(x, y) {
 function drawCells(x, y) {
   //Горизонтальная ориентация
   if (!isFightStarted) {
-    console.log(isFightStarted);
     if (mapShipSizeToQuantity(currentShipSize) > 0) {
       switch (currentOrientation) {
         case Orientations.HORIZONTAL: {
