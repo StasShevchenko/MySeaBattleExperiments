@@ -40,10 +40,15 @@ h2 {
 #playersList p {
   margin: 0px;
 }
-
-.players-content {
+.players-content{
   display: flex;
   justify-content: center;
+}
+
+.players-list-container, .games-list-container {
+  display: block;
+  justify-content: center;
+  text-align: center;
 }
 
 ::-webkit-scrollbar {
@@ -60,7 +65,7 @@ h2 {
   border-radius: 100px;
 }
 
-.players-list {
+.players-list, .games-list {
   width: 300px;
   height: 300px;
   padding: 10px;
@@ -68,7 +73,39 @@ h2 {
   border-radius: 10px;
   overflow: auto;
   display: flex;
+  margin: 20px;
   justify-content: left;
+}
+
+.games-list{
+  width: 500px;
+}
+
+/*Настройка списка игр*/
+
+#gamesList li{
+  padding-bottom: 10px;
+  width: 100%;
+  display: flex;
+}
+
+#gamesList span{
+  margin-right: 10px;
+  width: 100%;
+}
+
+#gamesList li::before {
+  content: "• ";
+  margin-right: 10px;
+}
+
+
+#gamesList{
+  padding-left: 15px;
+  margin: 0px;
+  width: 100%;
+  margin-left: 0px;
+  text-align: left;
 }
 
 .start-form {
@@ -239,13 +276,3 @@ button {
   margin: 10px;
 }
 
-
-/*
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-
-}
-*/

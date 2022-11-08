@@ -24,6 +24,7 @@ const startForm = document.getElementById("startForm");
 const playersListForm = document.getElementById("playersListForm");
 const mainGameForm = document.getElementById("mainGameForm");
 const playersList = document.getElementById("playersList");
+const gamesList = document.getElementById("gamesList")
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -194,6 +195,29 @@ function onPlayersReceive(payload) {
         subscribeToGame();
       }
     }
+  }
+}
+
+function onGameInfoReceive(payload){
+  const games = JSON.parse(payload.body);
+  while(gamesList.firstChild){
+    gamesList.removeChild(gamesList.lastChild);
+  }
+  for(let game of games){
+    const gameItem = document.createElement("li");
+    let winnerText = document.createElement("span");
+    winnerText.innerHTML = "Победитель: " + game.winner;
+    winnerText.style.color = "green";
+    gameItem.appendChild(winnerText);
+    let loserText = document.createElement("span");
+    loserText.innerHTML = "Проигравший: "+game.loser;
+    loserText.style.color = "red";
+    let dateText = document.createElement("span");
+    dateText.innerHTML = game.date
+    gameItem.appendChild(winnerText);
+    gameItem.appendChild(loserText);
+    gameItem.appendChild(dateText);
+    gamesList.appendChild(gameItem);
   }
 }
 
@@ -382,6 +406,9 @@ function onConnectSuccess() {
   stompClient.subscribe("/topic/players", function (payload) {
     onPlayersReceive(payload);
   });
+  stompClient.subscribe("/topic/games", function(payload){
+    onGameInfoReceive(payload);
+  });
   stompClient.send("/app/addplayer", {}, enterNameTextField.value.trim());
   startForm.style.display = "none";
   playersListForm.style.display = "block";
@@ -494,9 +521,10 @@ function resetGameField() {
   }
 }
 
-window.addEventListener("beforeunload", function (e) {
-  // Cancel the event
-  e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
-  // Chrome requires returnValue to be set
-  e.returnValue = "";
-});
+
+// window.addEventListener("beforeunload", function (e) {
+//   // Cancel the event
+//   e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+//   // Chrome requires returnValue to be set
+//   e.returnValue = "";
+// });
