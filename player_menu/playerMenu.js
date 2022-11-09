@@ -20,34 +20,17 @@ let enemyLifeCount = 20;
 
 const url = "http://192.168.109.228:8080";
 
-const startForm = document.getElementById("startForm");
 const playersListForm = document.getElementById("playersListForm");
 const mainGameForm = document.getElementById("mainGameForm");
 const playersList = document.getElementById("playersList");
-const gamesList = document.getElementById("gamesList")
-
-//////////////////////////////////////////////////////////////////////////////////
-
-//
-//Блок входа в игру
-//
-const enterNameButton = document.getElementById("enterNameButton");
-const enterNameTextField = document.getElementById("enterNameTextField");
+const gamesList = document.getElementById("gamesList");
 const welcomeHeader = document.getElementById("welcomeHeader");
 
-enterNameButton.addEventListener("click", function () {
-  if (enterNameTextField.value != "") {
-    currentPlayerName = enterNameTextField.value.trim();
-    welcomeHeader.innerHTML = "Добро пожаловать " + currentPlayerName + " !";
-    const socket = new SockJS(url + "/seabattle");
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, onConnectSuccess);
-  }
-});
-
-//
-//Конец блока входа в игру
-//
+currentPlayerName = sessionStorage.getItem("playerName");
+welcomeHeader.innerHTML = "Добро пожаловать " + currentPlayerName + " !";
+const socket = new SockJS(url + "/seabattle");
+stompClient = Stomp.over(socket);
+stompClient.connect({}, onConnectSuccess);
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -198,22 +181,22 @@ function onPlayersReceive(payload) {
   }
 }
 
-function onGameInfoReceive(payload){
+function onGameInfoReceive(payload) {
   const games = JSON.parse(payload.body);
-  while(gamesList.firstChild){
+  while (gamesList.firstChild) {
     gamesList.removeChild(gamesList.lastChild);
   }
-  for(let game of games){
+  for (let game of games) {
     const gameItem = document.createElement("li");
     let winnerText = document.createElement("span");
     winnerText.innerHTML = "Победитель: " + game.winner;
     winnerText.style.color = "green";
     gameItem.appendChild(winnerText);
     let loserText = document.createElement("span");
-    loserText.innerHTML = "Проигравший: "+game.loser;
+    loserText.innerHTML = "Проигравший: " + game.loser;
     loserText.style.color = "red";
     let dateText = document.createElement("span");
-    dateText.innerHTML = game.date
+    dateText.innerHTML = game.date;
     gameItem.appendChild(winnerText);
     gameItem.appendChild(loserText);
     gameItem.appendChild(dateText);
@@ -406,11 +389,10 @@ function onConnectSuccess() {
   stompClient.subscribe("/topic/players", function (payload) {
     onPlayersReceive(payload);
   });
-  stompClient.subscribe("/topic/games", function(payload){
+  stompClient.subscribe("/topic/games", function (payload) {
     onGameInfoReceive(payload);
   });
-  stompClient.send("/app/addplayer", {}, enterNameTextField.value.trim());
-  startForm.style.display = "none";
+  stompClient.send("/app/addplayer", {}, currentPlayerName);
   playersListForm.style.display = "block";
 }
 
@@ -520,7 +502,6 @@ function resetGameField() {
     enemyGameField.removeChild(enemyGameField.lastChild);
   }
 }
-
 
 // window.addEventListener("beforeunload", function (e) {
 //   // Cancel the event
