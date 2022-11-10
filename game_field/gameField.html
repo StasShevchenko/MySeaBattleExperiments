@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Морской бой</title>
+    <link rel="stylesheet" href="gameField.css">
+</head>
+<body>
+    <div class="main-game-form" id="mainGameForm">
+        <h1>Морской бой!</h1>
+        <h2 id = "enemyReadyHeader">Ваш противник расставляет корабли!</h2>
+        <div class="game-field">
+          <div class="user-field" id="user-game-field"></div>
+    
+          <div class="enemy-field" id ="enemyGameField"></div>
+    
+          <div class="configure-user-field" id = "userFieldControlPanel">
+            <div>
+              <h3>Расстановка кораблей:</h3>
+              <h4>Тип корабля:</h4>
+              <div class="ship-buttons-group">
+                <div style="display: flex">
+                  <input
+                    type="radio"
+                    id="biggest-ship-rb"
+                    name="ship"
+                    value="4"
+                    checked
+                  />
+                  <p style="margin: 4px 0px">Четырехпалубный корабль</p>
+                </div>
+                <div style="display: flex">
+                  <input type="radio" id="big-ship-rb" name="ship" value="3" />
+                  <p style="margin: 4px 0px">Трехпалубный корабль</p>
+                </div>
+                <div style="display: flex">
+                  <input type="radio" id="medium-ship-rb" name="ship" value="2" />
+                  <p style="margin: 4px 0px">Двухпалубный корабль</p>
+                </div>
+                <div style="display: flex">
+                  <input type="radio" id="small-ship-rb" name="ship" value="1" />
+                  <p style="margin: 4px 0px">Однопалубный корабль</p>
+                </div>
+              </div>
+              <h4>Положение корабля:</h4>
+              <div class="orientation-buttons-group">
+                <p>
+                  <input
+                    type="radio"
+                    id="horizontal-rb"
+                    name="orientation"
+                    value="1"
+                    checked
+                  />Горизонтальное
+                </p>
+                <p>
+                  <input
+                    type="radio"
+                    id="vertical-rb"
+                    name="orientation"
+                    value="2"
+                  />Вертикальное
+                </p>
+              </div>
+            </div>
+          </div>
+    
+          <div class="control-panel" id = "prepareGameButtonsPanel">
+            <form name="mainControl">
+              <input
+                type="button"
+                name="ready"
+                value="Объявить готовность к бою!"
+                id="readyButton"
+              />
+              <input
+                type="button"
+                name="clear"
+                value="Обнулить расстановку кораблей"
+                id="clearButton"
+              />
+            </form>
+          </div>
+        </div>
+    
+        <div class="prepare-legend" id="prepareLegend">
+          <div class="green">Клетки, на которых может быть размещен корабль.</div>
+          <div class="red">
+            Клетки, на которых корабль не может быть размещен.
+          </div>
+          <div class="blue">Клетки, на которых размещены ваши корабли.</div>
+        </div>
+        <div class="game-legend" id="gameLegend">
+          <div class="blue">Клетки, на которых размещены ваши корабли.</div>
+          <div class="black">Подорванные корабли</div>
+          <div class="pink">Клетки недоступные для выстрела</div>
+        </div>
+      </div>
+
+      <div class="pop-up-container" id = "gameResultContainer">
+        <div class="pop-up">
+          <h2 id = "resultMessageHeader"></h2>
+          <button id="returnToGameListButton">
+            Вернуться к списку игроков
+          </button>
+        </div>
+      </div>
+      
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  <script type="module" src="gameField.js"></script>
+  <script type="module" src="prepare_game_functions.js"></script>
+</html>
