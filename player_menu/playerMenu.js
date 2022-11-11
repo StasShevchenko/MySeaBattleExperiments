@@ -5,8 +5,6 @@ const url = "http://192.168.109.228:8080";
 
 sessionStorage.setItem("firstGamePageVisit", "false");
 
-
-
 const playersListForm = document.getElementById("playersListForm");
 const playersList = document.getElementById("playersList");
 const gamesList = document.getElementById("gamesList");
@@ -49,8 +47,7 @@ function onPlayersReceive(payload) {
       playerItem.appendChild(playerInviteButton);
       playersList.appendChild(playerItem);
     }
-  }  
-  
+  }
 }
 
 function onGameInfoReceive(payload) {
@@ -172,7 +169,7 @@ function sendInviteToPlayer(player) {
         JSON.stringify({
           message: cancelMessage,
           receiverName: player.login,
-          senderName: currentPlayerName
+          senderName: currentPlayerName,
         })
       );
     },
@@ -201,7 +198,7 @@ function onConnectSuccess() {
   stompClient.send(
     "/app/addplayer",
     {},
-    JSON.stringify({ login: currentPlayerName, status: "waiting"})
+    JSON.stringify({ login: currentPlayerName, status: "waiting" })
   );
   playersListForm.style.display = "block";
 }

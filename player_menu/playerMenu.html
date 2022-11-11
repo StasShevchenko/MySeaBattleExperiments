@@ -1,58 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="playerMenu.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="playerMenu.css" />
     <title>Игровое меню</title>
-</head>
-<body>
-  <div class="players-list-form" id="playersListForm">
-    <h2 id="welcomeHeader"></h2>
-    <div class = "players-content">
-    <div class="players-list-container">
-      <h3>Список свободных игроков в сети:</h3>
-      <div class="players-list">
-        <ul id="playersList">
-        </ul>
+  </head>
+  <body>
+    <div class="players-list-form" id="playersListForm">
+      <h2 id="welcomeHeader"></h2>
+      <div class="players-content">
+        <div class="players-list-container">
+          <h3>Список свободных игроков в сети:</h3>
+          <div class="players-list">
+            <ul id="playersList"></ul>
+          </div>
+        </div>
+        <div class="games-list-container">
+          <h3>Список прошедших игр:</h3>
+
+          <div class="games-list">
+            <ul id="gamesList"></ul>
+          </div>
+        </div>
       </div>
     </div>
-    <div class = "games-list-container">
-      <h3>Список прошедших игр:</h3>
 
-      <div class="games-list">
-        <ul id="gamesList">
-
-        </ul>
+    <div class="pop-up-container" id="invitePopUpContainer">
+      <div class="pop-up">
+        <h2 id="invitationHeader"></h2>
+        <button id="acceptInvitationButton">Принять приглашение</button>
+        <button id="rejectInvitationButton">Отклонить приглашение</button>
       </div>
     </div>
-  </div>
-  </div>
 
-  <div class="pop-up-container" id = "invitePopUpContainer">
-    <div class="pop-up">
-      <h2 id = "invitationHeader"></h2>
-      <button id="acceptInvitationButton">
-        Принять приглашение
-      </button>
-      <button id = "rejectInvitationButton">
-          Отклонить приглашение
-      </button>
+    <div class="pop-up-container" id="waitPopUpContainer">
+      <div class="pop-up">
+        <h2 id="invitationHeader">Ожидаем ответа игрока...</h2>
+        <button id="rejectSendedInvitationButton">Отменить приглашение</button>
+      </div>
     </div>
-  </div>
-
-  <div class="pop-up-container" id = "waitPopUpContainer">
-    <div class="pop-up">
-      <h2 id = "invitationHeader">Ожидаем ответа игрока...</h2>
-      <button id="rejectSendedInvitationButton">
-        Отменить приглашение
-      </button>
-    </div>
-  </div>
-  
-</body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
   <script type="module" src="playerMenu.js"></script>
 </html>

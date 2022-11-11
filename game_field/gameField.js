@@ -4,6 +4,8 @@ const url = "http://192.168.109.228:8080";
 
 let enemyLifeCount = 20;
 
+const soundController = new GameSound();
+
 window.onload = function () {
   if (sessionStorage.getItem("firstGamePageVisit") == "true") {
     window.location.href = "../player_menu/playerMenu.html";
@@ -148,9 +150,11 @@ function onGameReceive(payload) {
     let x = parseInt(move.x);
     let y = parseInt(move.y);
     if (userFieldMatrix[x][y] == prepareGameFunctions.GameFieldStates.PLACED) {
+      soundController.playDamageSound();
       userFieldMatrix[x][y] = prepareGameFunctions.GameFieldStates.DESTRUCTED;
       getGameFieldCell(x, y).style.background = "black";
     } else {
+      soundController.playEnemyMissSound();
       userFieldMatrix[x][y] = prepareGameFunctions.GameFieldStates.RESTRICTED;
       getGameFieldCell(x, y).style.background = "pink";
       isMyMove = true;
@@ -209,8 +213,10 @@ function onEnemyCellClick(x, y) {
           receiverName: enemyName,
         })
       );
+      //soundController.playRandomAttackSound();
       checkWin();
     } else {
+      //soundController.playRandomMissSound();
       enemyFieldMatrix[x][y] = prepareGameFunctions.GameFieldStates.RESTRICTED;
       getEnemyGameFieldCell(x, y).style.background = "pink";
       stompClient.send(
