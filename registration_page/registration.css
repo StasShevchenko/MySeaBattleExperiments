@@ -6,7 +6,8 @@
   padding: 0px;
   margin: 0px;
 }
-.start-form {
+
+.main-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -14,21 +15,32 @@
   align-items: center;
 }
 
-.start-form form{
-  margin-top: 40px;
+.main-wrapper h1,
+.main-wrapper h2 {
+  margin: 10px;
+}
+
+.form-wrapper form {
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
 }
 
-.start-form input{
-  margin: 10px;
+.form-wrapper form input {
   width: 120%;
+  margin: 10px;
   padding: 5px;
 }
 
-#errorMessageHeader{
+#emptyInputErrorMessage {
   display: none;
 }
 
+#userAlreadyExistsErrorMessage {
+  display: none;
+}
+
+#successMessage{
+    display: none;
+}

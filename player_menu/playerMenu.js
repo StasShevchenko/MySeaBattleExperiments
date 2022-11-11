@@ -96,8 +96,7 @@ function subscribeToPrivateMessages() {
                 message: "REJECT",
                 receiverName: message.senderName,
                 senderName: currentPlayerName,
-              },
-              { once: true }
+              } 
             )
           );
         });

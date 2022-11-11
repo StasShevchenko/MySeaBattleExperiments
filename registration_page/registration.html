@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="registration.css">
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="main-wrapper">
+        <h1>Регистрация!</h1>
+
+       
+        <div class="form-wrapper">  
+            <form action="#">
+                <input
+                type="text"
+                name="name"
+                id="loginInput"
+                placeholder="Введите ваш логин!"
+              />
+              <input
+                type="text"
+                name="password"
+                id="passwordInput"
+                placeholder="Придумайте пароль!"
+              />
+              <input
+                type="button"
+                name="register"
+                value="Зарегистрироваться"
+                id="registrationButton"
+              />
+              <input
+              type="button"
+              name="back"
+              value="Назад"
+              id="backButton"
+            />
+              
+            </form>
+        </div>
+      <h2 id = "emptyInputErrorMessage">Ввод не должен быть пустым!</h2>
+      <h2 id = "userAlreadyExistsErrorMessage">Пользователь с таким именем уже существует!</h2>
+      <h2 id = "successMessage">Игрок успешно зарегистрирован!</h2>
+    </div>
+  </body>
+  <script type = "module" src="registration.js"></script>
+</html>

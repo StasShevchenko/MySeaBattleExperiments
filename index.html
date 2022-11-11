@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="start_page/startPage.css" />
   </head>
   <body>
-
     <div class="start-form" id="startForm">
       <h1>Добро пожаловать в морской бой!</h1>
       <div class="start-panel">
@@ -14,19 +13,26 @@
           <input
             type="text"
             name="name"
-            id="enterNameTextField"
-            placeholder="Введите ваше имя!"
+            id="loginInput"
+            placeholder="Введите ваш логин!"
           />
           <input
+            type="password"
+            name="password"
+            id="passwordInput"
+            placeholder="Введите ваш пароль!"
+          />
+          <input type="button" name="enter" value="Войти" id="enterButton" />
+          <input
             type="button"
-            name="enter"
-            value="Подтвердить имя"
-            id="enterNameButton"
+            name="register"
+            value="Зарегистрироваться"
+            id="registrationButton"
           />
         </form>
       </div>
+      <h2 id="errorMessageHeader" display="none">Неверные логин или пароль!</h2>
     </div>
   </body>
   <script type="module" src="start_page/startScript.js"></script>
 </html>
-
