@@ -5,7 +5,7 @@ const loginInput = document.getElementById("loginInput");
 const passwordInput = document.getElementById("passwordInput");
 const successMessage = document.getElementById("successMessage");
 const backButton = document.getElementById("backButton");
-const URL = "http://localhost:8080/register";
+const URL = "http://192.168.109.228:8080/register";
 const Http = new XMLHttpRequest();
 
 registrationButton.addEventListener("click", function(){

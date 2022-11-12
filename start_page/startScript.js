@@ -3,7 +3,7 @@ const loginInput = document.getElementById("loginInput");
 const passwordInput = document.getElementById("passwordInput");
 const errorMessage = document.getElementById("errorMessageHeader");
 const registrationButton = document.getElementById("registrationButton");
-const URL = "http://localhost:8080/login";
+const URL = "http://192.168.109.228:8080/login";
 const Http = new XMLHttpRequest();
 
 registrationButton.addEventListener("click", function(){

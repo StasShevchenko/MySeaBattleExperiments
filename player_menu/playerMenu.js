@@ -3,11 +3,16 @@ let currentPlayerName;
 
 const url = "http://192.168.109.228:8080";
 
+const playerStatisticUrl = "http://192.168.109.228:8080/playerstatistic";
+
+const overallStatisticUrl = "http://192.168.109.228:8080/overallstatistic";
+
 sessionStorage.setItem("firstGamePageVisit", "false");
 
 const playersListForm = document.getElementById("playersListForm");
 const playersList = document.getElementById("playersList");
-const gamesList = document.getElementById("gamesList");
+const playerStatisticList = document.getElementById("playerStatisticList");
+const overallStatisticList = document.getElementById("overallStatisticList");
 const welcomeHeader = document.getElementById("welcomeHeader");
 
 currentPlayerName = sessionStorage.getItem("playerName");
@@ -50,29 +55,6 @@ function onPlayersReceive(payload) {
   }
 }
 
-function onGameInfoReceive(payload) {
-  const games = JSON.parse(payload.body);
-  while (gamesList.firstChild) {
-    gamesList.removeChild(gamesList.lastChild);
-  }
-  for (let game of games) {
-    const gameItem = document.createElement("li");
-    let winnerText = document.createElement("span");
-    winnerText.innerHTML = "Победитель: " + game.winner;
-    winnerText.style.color = "green";
-    gameItem.appendChild(winnerText);
-    let loserText = document.createElement("span");
-    loserText.innerHTML = "Проигравший: " + game.loser;
-    loserText.style.color = "red";
-    let dateText = document.createElement("span");
-    dateText.innerHTML = game.date;
-    gameItem.appendChild(winnerText);
-    gameItem.appendChild(loserText);
-    gameItem.appendChild(dateText);
-    gamesList.appendChild(gameItem);
-  }
-}
-
 //Подписываемся на приватные сообщения. Обработка всех приходящих сообщения
 function subscribeToPrivateMessages() {
   stompClient.subscribe(
@@ -91,13 +73,11 @@ function subscribeToPrivateMessages() {
           stompClient.send(
             "/app/private-message",
             {},
-            JSON.stringify(
-              {
-                message: "REJECT",
-                receiverName: message.senderName,
-                senderName: currentPlayerName,
-              } 
-            )
+            JSON.stringify({
+              message: "REJECT",
+              receiverName: message.senderName,
+              senderName: currentPlayerName,
+            })
           );
         });
         //Принимаем приглашение и инициируем игру
@@ -191,16 +171,114 @@ function onConnectSuccess() {
   stompClient.subscribe("/topic/players", function (payload) {
     onPlayersReceive(payload);
   });
-  stompClient.subscribe("/topic/games", function (payload) {
-    onGameInfoReceive(payload);
-  });
   stompClient.send(
     "/app/addplayer",
     {},
     JSON.stringify({ login: currentPlayerName, status: "waiting" })
   );
   playersListForm.style.display = "block";
+  receivePlayerStatistic();
+  receiveOverallStatistic();
 }
+
+const playerHttp = new XMLHttpRequest();
+
+function receivePlayerStatistic() {
+  playerHttp.open(
+    "GET",
+    playerStatisticUrl + "?" + "name=" + currentPlayerName
+  );
+  playerHttp.send();
+}
+
+playerHttp.onreadystatechange = function () {
+  if (this.readyState == 4 && this.status == 200) {
+    let playerStatisticDataList = JSON.parse(playerHttp.responseText);
+    while (playerStatisticList.firstChild) {
+      playerStatisticList.removeChild(playerStatisticList.lastChild);
+    }
+    let i = 1;
+    for (let gameInfo of playerStatisticDataList) {
+      if (gameInfo.winner == currentPlayerName) {
+        const playerStatisticItem = document.createElement("li");
+        let head = document.createElement("span");
+        head.innerHTML =
+          i +
+          ". Победа. " +
+          "Противник: " +
+          gameInfo.loser +
+          " Дата: " +
+          gameInfo.date;
+        head.style.color = "green";
+        playerStatisticItem.appendChild(head);
+        playerStatisticList.appendChild(playerStatisticItem);
+        i++;
+      } else {
+        const playerStatisticItem = document.createElement("li");
+        let head = document.createElement("span");
+        head.innerHTML =
+          i +
+          ". Поражение. " +
+          "Противник: " +
+          gameInfo.winner +
+          " Дата: " +
+          gameInfo.date;
+        head.style.color = "red";
+        playerStatisticItem.appendChild(head);
+        playerStatisticList.appendChild(playerStatisticItem);
+        i++;
+      }
+    }
+  }
+};
+
+const overallHttp = new XMLHttpRequest();
+
+function receiveOverallStatistic() {
+  overallHttp.open("GET", overallStatisticUrl);
+  overallHttp.send();
+}
+
+overallHttp.onreadystatechange = function () {
+  if (this.readyState == 4 && this.status == 200) {
+    let overallStatisticDataList = JSON.parse(overallHttp.responseText);
+    while (overallStatisticList.firstChild) {
+      overallStatisticList.removeChild(playerStatisticList.lastChild);
+    }
+    let i = 1;
+    for (let playerStatistic of overallStatisticDataList) {
+      const overallStatisticItem = document.createElement("li");
+      let head = document.createElement("span");
+      head.innerHTML = i + ". " + playerStatistic.playerName;
+      let winPercentageElement = document.createElement("span");
+      winPercentageElement.innerHTML = "Процент побед: " + playerStatistic.winPercentage;
+      let winCountElement = document.createElement("span");
+      winCountElement.innerHTML = "Побед: " + playerStatistic.winCount;
+      let loseCountElement = document.createElement("span");
+      loseCountElement.innerHTML = "Поражений "+ playerStatistic.loseCount;
+
+      // head.innerHTML =
+      //   i +
+      //   ". " +
+      //   playerStatistic.playerName +
+      //   "Процент побед: " +
+      //   playerStatistic.winPercentage +
+      //   " Побед: " +
+      //   playerStatistic.winCount +
+      //   " Поражений: " +
+      //   playerStatistic.loseCount;
+      if (playerStatistic.playerName == currentPlayerName) {
+        head.style.color = "blue";
+      }
+      overallStatisticItem.appendChild(head);
+      overallStatisticItem.appendChild(winPercentageElement);
+      overallStatisticItem.appendChild(winCountElement);
+      overallStatisticItem.appendChild(loseCountElement);
+      overallStatisticList.appendChild(overallStatisticItem);
+      i++;
+    }
+  }
+};
 
 // window.addEventListener("beforeunload", function (e) {
 //   // Cancel the event

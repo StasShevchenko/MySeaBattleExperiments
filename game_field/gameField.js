@@ -213,10 +213,10 @@ function onEnemyCellClick(x, y) {
           receiverName: enemyName,
         })
       );
-      //soundController.playRandomAttackSound();
+      soundController.playRandomAttackSound();
       checkWin();
     } else {
-      //soundController.playRandomMissSound();
+      soundController.playRandomMissSound();
       enemyFieldMatrix[x][y] = prepareGameFunctions.GameFieldStates.RESTRICTED;
       getEnemyGameFieldCell(x, y).style.background = "pink";
       stompClient.send(
