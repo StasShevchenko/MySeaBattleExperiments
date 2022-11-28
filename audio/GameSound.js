@@ -9,12 +9,14 @@ class GameSound {
   }
 
   playDamageSound() {
+    this.#damageSound.volume = 0.1;
     this.#damageSound.currentTime = 0;
     this.#damageSound.play();
   }
 
 
   playEnemyMissSound(){
+    this.#missSound.volume = 0.4;
     this.#missSound.currentTime = 0;
     this.#missSound.play();
   }
@@ -30,6 +32,7 @@ class GameSound {
   }
 
   #damageSound = new Audio("../audio/bear_cry_cut.mp3");
+
 
   #missSound = new Audio("../audio/miss_sound.mp3");
   

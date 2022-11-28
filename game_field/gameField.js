@@ -1,6 +1,6 @@
 import * as prepareGameFunctions from "./prepare_game_functions.js";
 
-const url = "http://192.168.109.228:8080";
+const url = "http://192.168.224.228:8080";
 
 let enemyLifeCount = 20;
 

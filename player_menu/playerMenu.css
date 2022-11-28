@@ -91,6 +91,17 @@ h2 {
   width: 500px;
 }
 
+#overallStatisticTable{
+  width: 100%;
+  height: min-content;
+  border-collapse: separate;
+  border-spacing: 10px;
+}
+
+#overallStatisticTable td{
+  margin-bottom: 10px;
+}
+
 /*Настройка списка игр*/
 
 #playerStatisticList li {
@@ -118,6 +129,7 @@ h2 {
   list-style: none;
   
 }
+
 
 #overallStatisticList li {
   width: 100%;

@@ -1,18 +1,18 @@
 let stompClient = null;
 let currentPlayerName;
 
-const url = "http://192.168.109.228:8080";
+const url = "http://192.168.224.228:8080";
 
-const playerStatisticUrl = "http://192.168.109.228:8080/playerstatistic";
+const playerStatisticUrl = "http://192.168.224.228:8080/playerstatistic";
 
-const overallStatisticUrl = "http://192.168.109.228:8080/overallstatistic";
+const overallStatisticUrl = "http://192.168.224.228:8080/overallstatistic";
 
 sessionStorage.setItem("firstGamePageVisit", "false");
 
 const playersListForm = document.getElementById("playersListForm");
 const playersList = document.getElementById("playersList");
 const playerStatisticList = document.getElementById("playerStatisticList");
-const overallStatisticList = document.getElementById("overallStatisticList");
+const overallStatisticTable = document.getElementById("overallStatisticTable");
 const welcomeHeader = document.getElementById("welcomeHeader");
 
 currentPlayerName = sessionStorage.getItem("playerName");
@@ -242,39 +242,51 @@ function receiveOverallStatistic() {
 overallHttp.onreadystatechange = function () {
   if (this.readyState == 4 && this.status == 200) {
     let overallStatisticDataList = JSON.parse(overallHttp.responseText);
-    while (overallStatisticList.firstChild) {
-      overallStatisticList.removeChild(playerStatisticList.lastChild);
+    while (overallStatisticTable.childElementCount != 1) {
+      overallStatisticTable.removeChild(overallStatisticTable.lastChild);
     }
     let i = 1;
     for (let playerStatistic of overallStatisticDataList) {
-      const overallStatisticItem = document.createElement("li");
-      let head = document.createElement("span");
-      head.innerHTML = i + ". " + playerStatistic.playerName;
-      let winPercentageElement = document.createElement("span");
-      winPercentageElement.innerHTML = "Процент побед: " + playerStatistic.winPercentage;
-      let winCountElement = document.createElement("span");
-      winCountElement.innerHTML = "Побед: " + playerStatistic.winCount;
-      let loseCountElement = document.createElement("span");
-      loseCountElement.innerHTML = "Поражений "+ playerStatistic.loseCount;
-
-      // head.innerHTML =
-      //   i +
-      //   ". " +
-      //   playerStatistic.playerName +
-      //   "Процент побед: " +
-      //   playerStatistic.winPercentage +
-      //   " Побед: " +
-      //   playerStatistic.winCount +
-      //   " Поражений: " +
-      //   playerStatistic.loseCount;
-      if (playerStatistic.playerName == currentPlayerName) {
-        head.style.color = "blue";
+      const row = document.createElement("tr");
+      const numberCell = document.createElement("td");
+      numberCell.innerHTML = i;
+      const nameCell = document.createElement("td");
+      nameCell.innerHTML = playerStatistic.playerName;
+      const winPercentageCell = document.createElement("td");
+      winPercentageCell.innerHTML = playerStatistic.winPercentage;
+      const winCountCell = document.createElement("td");
+      winCountCell.innerHTML = playerStatistic.winCount;
+      const loseCountCell = document.createElement("td");
+      loseCountCell.innerHTML = playerStatistic.loseCount;
+      row.appendChild(numberCell);
+      row.appendChild(nameCell);
+      row.appendChild(winPercentageCell);
+      row.appendChild(winCountCell);
+      row.appendChild(loseCountCell);
+      if(playerStatistic.playerName == currentPlayerName){
+        row.style.backgroundColor = "green";
+        row.style.color = "white";
       }
-      overallStatisticItem.appendChild(head);
-      overallStatisticItem.appendChild(winPercentageElement);
-      overallStatisticItem.appendChild(winCountElement);
-      overallStatisticItem.appendChild(loseCountElement);
-      overallStatisticList.appendChild(overallStatisticItem);
+      overallStatisticTable.appendChild(row);
+
+      // const overallStatisticItem = document.createElement("li");
+      // let head = document.createElement("span");
+      // head.innerHTML = i + ". " + playerStatistic.playerName;
+      // let winPercentageElement = document.createElement("span");
+      // winPercentageElement.innerHTML = "Процент побед: " + playerStatistic.winPercentage;
+      // let winCountElement = document.createElement("span");
+      // winCountElement.innerHTML = "Побед: " + playerStatistic.winCount;
+      // let loseCountElement = document.createElement("span");
+      // loseCountElement.innerHTML = "Поражений "+ playerStatistic.loseCount;
+
+      // if (playerStatistic.playerName == currentPlayerName) {
+      //   head.style.color = "blue";
+      // }
+      // overallStatisticItem.appendChild(head);
+      // overallStatisticItem.appendChild(winPercentageElement);
+      // overallStatisticItem.appendChild(winCountElement);
+      // overallStatisticItem.appendChild(loseCountElement);
+      // overallStatisticList.appendChild(overallStatisticItem);
       i++;
     }
   }
